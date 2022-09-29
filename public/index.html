@@ -34,6 +34,8 @@
   var form = document.getElementById('form');
   var input = document.getElementById('input');
   var messages=document.getElementById("messages");
+  
+
   form.addEventListener('submit', function(e) {
     e.preventDefault();
     if (input.value) {
@@ -41,9 +43,10 @@
       input.value = '';
     }
   });
+  
   socket.on('chat message', function(msg) {
     var item = document.createElement('li');
-    item.innerText = msg;
+    item.innerText = `${msg}`;
     messages.appendChild(item);
     window.scrollTo(0, document.body.scrollHeight);
   });

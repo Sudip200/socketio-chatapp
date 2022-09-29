@@ -1,17 +1,21 @@
 const express = require('express');
 const app = express();
+const path=require('path');
 const http = require('http');
 const {Server} =require('socket.io')
 const server = http.createServer(app);
 const io=new Server(server);
+
+//app.use(express.static(path.join(__dirname, "public")));
 app.get('/', (req, res) => {
-    console.log("Here")
-    res.sendFile(__dirname+"/index.html");
+    
+    res.sendFile(__dirname+"/public/index.html");
   });
-  
+
+
 
   io.on('connection', (socket) => {
-    console.log('a user connected');
+    console.log(`a user connected`);
     socket.on('disconnect', () => {
         console.log('user disconnected');
       });
@@ -24,6 +28,6 @@ app.get('/', (req, res) => {
   });
   
  
-server.listen(5000, () => {
+server.listen(8000, () => {
     console.log('listening on:3000');
   });
