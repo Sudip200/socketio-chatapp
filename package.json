@@ -1,0 +1,25 @@
+{
+  "name": "socketio-chatapp",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "nodemon index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Sudip200/socketio-chatapp.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Sudip200/socketio-chatapp/issues"
+  },
+  "homepage": "https://github.com/Sudip200/socketio-chatapp#readme",
+  "dependencies": {
+    "express": "^4.18.1",
+    "nodemon": "^2.0.20",
+    "socket.io": "^4.5.2"
+  }
+}
