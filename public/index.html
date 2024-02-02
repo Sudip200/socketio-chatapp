@@ -20,33 +20,56 @@
     </style>
   </head>
   <body>
+    <div id="currentRoom" style="position: fixed;top: 0%;"></div>
+    <div>
+      <ul id="roomList"></ul>
+    </div>
     <ul id="messages"></ul>
     
     <div id="form-div">
+
     <form id="form" action="">
       <input id="input" autocomplete="off" /><button>Send</button>
-
     </form>
   </div>
     <script src="/socket.io/socket.io.js"></script>
 <script>
   var socket = io();
+  let currentRoom = null;
+  var formDiv = document.getElementById('form-div');
   var form = document.getElementById('form');
   var input = document.getElementById('input');
   var messages=document.getElementById("messages");
-  
-
+  var currentRoomDiv = document.getElementById('currentRoom');
+  formDiv.style.display = 'none';
+  function joinRoom(roomId){
+    socket.emit('joinRoom', roomId);
+    currentRoom = roomId;
+    document.getElementById('roomList').style.display = 'none';
+    formDiv.style.display = 'block';
+    currentRoomDiv.textContent = `Current Room: ${roomId}`;
+  }
+socket.on('updateRooms', function(rooms) {
+  const roomList = document.getElementById('roomList');
+  roomList.innerHTML = '';
+  rooms.forEach(room => {
+    const li = document.createElement('li');
+    li.textContent = room;
+    li.addEventListener('click', () => joinRoom(room));
+    roomList.appendChild(li);
+  });
+});
   form.addEventListener('submit', function(e) {
     e.preventDefault();
     if (input.value) {
-      socket.emit('chat message', input.value);
+      socket.emit('privateMessage', { room: currentRoom, message:input.value });
       input.value = '';
     }
   });
   
-  socket.on('chat message', function(msg) {
+  socket.on('privateMessage', function(data) {
     var item = document.createElement('li');
-    item.innerText = `${msg}`;
+    item.innerText = `${data.message}`;
     messages.appendChild(item);
     window.scrollTo(0, document.body.scrollHeight);
   });
