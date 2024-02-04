@@ -19,7 +19,11 @@
   "homepage": "https://github.com/Sudip200/socketio-chatapp#readme",
   "dependencies": {
     "express": "^4.18.1",
+    "mysql": "^2.18.1",
     "nodemon": "^2.0.20",
     "socket.io": "^4.5.2"
+  },
+  "devDependencies": {
+    "tailwindcss": "^3.4.1"
   }
 }

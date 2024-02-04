@@ -2,76 +2,87 @@
 <html>
   <head>
     <title>Socket.IO chat</title>
-   
-    <style>
-      body { margin: 0; padding-bottom: 3rem; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
-
-      #form { background: rgba(0, 0, 0, 0.15); padding: 0.25rem; position: fixed; bottom: 0; left: 0; right: 0; display: flex; height: 6rem; box-sizing: border-box; backdrop-filter: blur(10px); }
-      #input { border: none; padding: 0 1rem; flex-grow: 1; border-radius: 0.5rem; margin: 0.25rem; }
-      #input:focus { outline: none; }
-      #form > button { background: #333; border: none; padding: 0 1rem; margin: 0.25rem; border-radius: 3px; outline: none; color: #fff; }
-       #form-div{
-       height: 300px;
-       }
-       
-      #messages { list-style-type: none; margin: 0; padding: 0; }
-      #messages > li { padding: 0.5rem 1rem; }
-      #messages > li:nth-child(odd) { background: #efefef; }
-    </style>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="input.css">
+    <link rel="stylesheet" href="output.css">
   </head>
   <body>
-    <div id="currentRoom" style="position: fixed;top: 0%;"></div>
-    <div>
-      <ul id="roomList"></ul>
-    </div>
-    <ul id="messages"></ul>
     
-    <div id="form-div">
+
+    <div class="w-full h-screen flex justify-center items-center bg-slate-100" id="first-screen">
+      <div class="w-600 h-400 bg-white shadow-lg rounded-lg p-10 px-20" id="roomContainer">
+        <ul id="roomList"></ul>
+      </div>
+    </div>
+<div class="w-full h-screen bg-slate-100">
+  <div id="currentRoom" class="w-200 bg-blue-300 shadow flex justify-center">
+
+  </div>
+    <ul id="messages" class=""></ul>
+  <div id="form-div">
 
     <form id="form" action="">
       <input id="input" autocomplete="off" /><button>Send</button>
+  
     </form>
-  </div>
+
+</div>
+</div>
     <script src="/socket.io/socket.io.js"></script>
 <script>
   var socket = io();
+  var username;
   let currentRoom = null;
   var formDiv = document.getElementById('form-div');
   var form = document.getElementById('form');
   var input = document.getElementById('input');
   var messages=document.getElementById("messages");
   var currentRoomDiv = document.getElementById('currentRoom');
+  var roomDiv =document.getElementById("roomContainer");
   formDiv.style.display = 'none';
+  
   function joinRoom(roomId){
     socket.emit('joinRoom', roomId);
     currentRoom = roomId;
     document.getElementById('roomList').style.display = 'none';
+    document.getElementById("first-screen").style.display='none';
+    roomDiv.style.display='none';
     formDiv.style.display = 'block';
-    currentRoomDiv.textContent = `Current Room: ${roomId}`;
+    currentRoomDiv.textContent = `Current Room: ${roomId.roomName}`;
+    username = prompt('What is your name?');
   }
 socket.on('updateRooms', function(rooms) {
   const roomList = document.getElementById('roomList');
   roomList.innerHTML = '';
+
   rooms.forEach(room => {
     const li = document.createElement('li');
-    li.textContent = room;
+   
+    li.textContent = room.roomName;
+    li.className ="p-5 w-100 bg-blue-200 shadow mt-5"
     li.addEventListener('click', () => joinRoom(room));
     roomList.appendChild(li);
   });
 });
-  form.addEventListener('submit', function(e) {
+form.addEventListener('submit', function(e) {
     e.preventDefault();
     if (input.value) {
-      socket.emit('privateMessage', { room: currentRoom, message:input.value });
+      socket.emit('privateMessage', { room: currentRoom, message:input.value,user:username });
       input.value = '';
     }
   });
-  
+  socket.on('chatHistory', function(data) {
+    data.forEach(message => {
+      var item = document.createElement('li');
+      item.innerText = `${message.user}: ${message.message}`;
+      messages.appendChild(item);
+    });
+  });
   socket.on('privateMessage', function(data) {
     var item = document.createElement('li');
-    item.innerText = `${data.message}`;
+    item.innerText = `${data.user}:${data.message}`;
     messages.appendChild(item);
-    window.scrollTo(0, document.body.scrollHeight);
+    //window.scrollTo(0, 30);
   });
 </script>
   </body>
